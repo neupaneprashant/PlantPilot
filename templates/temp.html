@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Project</title>
+    <link rel="icon", href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAABvAAAAbwHxotxDAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAARpQTFRF////AP//////qv+qmcyZgNWAqv+qgMyAcbiAjuOOmVlNdraAeLeAvHhig9uKebOAidqJdrWAunlfn2BQfLqAg9aNgdiMgteNuHlgdrWAk+KJg9eMuHlgg9aMleKJd7SAdrWBgtaMidyLk+GJgdiLgNKKdrSAt3pglOKKgNCJleSJgteLsX9jfsGCoGNSdraAgteMk+KHluSJo2ZTer2CgtiNj9+KkuCIl+WJe76BgdaMj+GKgdeLgteMfsaFdrWAl+aIpmhVmOWIgMuGleSJpWlVmeaImuaImueJm+iIm+eIgMaDgMuHgcaDgdOLgdWLgsmEgtGIgteMhtqLjdSFj9aFkeGJkuGJm+aInOmIneeHnuiHn+mHoOuHeYf7WQAAAEt0Uk5TAAEBAwUGBgoSEhQcICIjKCk0O0BKSltgZWhqbXBxc3R1dnt/goeMlJiiq6ytrq+xssDAwcLCwsPHycnKy8zN0dLd3+Dg4Ojt7fT5ML8ETQAAAJZJREFUGBlVwQMWw0AABcBfpdqaW9u2bdu9/zXqvmQGT55JSQo24/bUApugMtszkGZ6anyJ7A09RuetEm+FYQi8gGW3juKjfrx14Ip3fWJ8uJfzq4NSMJFxFS/C/GKepgSD+6GGN74pXHYS72W1seJH3iTF6TIlwB/V5PwGsNCkBBxUBS5KwKa1xYJmBX502f5LOyED8ACGoRPjq03JXQAAAABJRU5ErkJggg=="></link>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="garden">Garden</a>
+        <a href="moisture">Soil Moisture</a>
+        <a href="temp">Plant Temperature</a>
+    </nav>
+        <h1>Plant Project</h1>
+        <!-- width="900" height="400" -->
+            <canvas id="lineChart", height="50", style="padding-left: 10px; padding-right: 10px;"></canvas>
+            <script>
+                // console.log(values | tojson)
+                let ctx = document.getElementById("lineChart").getContext("2d");
+                let lineChart = new Chart(ctx, {
+                    type: "line",
+                    labels: {{labels | safe}},
+                    data: {
+                        datasets: [
+                            {
+                                label: "Temperature (In Celcius)",
+                                data: {{ tempData | safe }},
+                                fill: false,
+                                borderColor: "rgb(116, 140, 91)",
+                                lineTension: 0.5
+                            }
+                        ]
+                    }
+                });
+                let values = [-5,50];
+                let labels = [];
+                setInterval(()=> {
+                    fetch('/getTemp')
+                        .then(response => response.text())
+                        .then(text => values.push(text))
+                    let today = new Date()
+                    labels.push(today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds())
+                    lineChart.destroy()
+                    lineChart = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: "Temperature (In Celcius)",
+                                data: values,
+                                fill: false,
+                                borderColor: "rgb(116, 140, 91)",
+                                lineTension: 0.5
+                            }
+                        ]
+                    }
+                })
+            }, 3000);
+                </script>
+                <br>
+                <br>
+                <div class="plant-box" id="plant" style="width: auto">
+            <b><p>Your plants: </p></b>
+            
+
+        </div>
+          <script>
+
+            // Retrieve the temperature data and update the HTML element
+            setInterval(()=> {
+                fetch('/getTemp')
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById("temp").innerHTML.replace(data + "°C");
+                        console.log(data)}); // Replace with your actual temperature data
+            },5000)
+            
+          </script>
+          <script src="{{ url_for('static', filename='garden.js') }}"></script>  
+          <script>
+              // Function to remove plant from local storage and Garden page
+              function removeFromGarden(plantName) {
+                  toDel = document.getElementById(plantName);
+                  toDel.remove();
+                  localStorage.removeItem(plantName);
+              }
+              </script>
+</body>
