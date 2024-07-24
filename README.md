@@ -18,3 +18,7 @@ The idea was suggested by our friend Mr.Joel. It was a real issue for student an
 #Things to Develop and Build
 
 We were trying to create a function so that it could send out automated message when the temperature not favorable but couldnot complete it due to the time limitation for the project.
+
+
+## Video Presentation of Project
+[![Video](https://img.youtube.com/vi/gCBm6jKZOL0/0.jpg)](https://www.youtube.com/watch?v=gCBm6jKZOL0)
